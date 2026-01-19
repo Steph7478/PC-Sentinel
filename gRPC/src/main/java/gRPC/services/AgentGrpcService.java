@@ -4,6 +4,7 @@ import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.grpc.server.service.GrpcService;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -14,18 +15,26 @@ public class AgentGrpcService extends MetricsServiceGrpc.MetricsServiceImplBase 
         private OshiService oshiService;
 
         @Override
-        public void streamMetrics(MetricRequest request, StreamObserver<MetricResponse> responseObserver) {
-                Flux.interval(Duration.ofSeconds(1))
+        public void streamMetrics(
+                        MetricRequest request,
+                        StreamObserver<MetricResponse> responseObserver) {
+
+                Mono<MetricResponse> initial = Mono.just(
+                                MetricResponse.newBuilder()
+                                                .addAllProcessors(oshiService.getProcessorInfo())
+                                                .setHostName(oshiService.getHostName())
+                                                .build());
+
+                Flux<MetricResponse> metrics = Flux.interval(Duration.ofSeconds(1))
                                 .map(tick -> MetricResponse.newBuilder()
                                                 .setCpuUsage(oshiService.getCpu())
                                                 .setRamUsage(oshiService.getRam())
-                                                .addAllProcessors(oshiService.getProcessorInfo())
-                                                .setHostName(oshiService.getHostName())
-                                                .build())
+                                                .build());
+
+                Flux.concat(initial, metrics)
                                 .subscribe(
                                                 responseObserver::onNext,
                                                 responseObserver::onError,
                                                 responseObserver::onCompleted);
         }
-
 }

@@ -17,8 +17,9 @@ public class AgentGrpcService extends MetricsServiceGrpc.MetricsServiceImplBase 
         public void streamMetrics(MetricRequest request, StreamObserver<MetricResponse> responseObserver) {
                 Flux.interval(Duration.ofSeconds(1))
                                 .map(tick -> MetricResponse.newBuilder()
-                                                .setCpuUsage((float) oshiService.getCpu())
-                                                .setRamUsage((float) oshiService.getRam())
+                                                .setCpuUsage(oshiService.getCpu())
+                                                .setRamUsage(oshiService.getRam())
+                                                .addAllProcessors(oshiService.getProcessorInfo())
                                                 .setHostName(oshiService.getHostName())
                                                 .build())
                                 .subscribe(
@@ -26,4 +27,5 @@ public class AgentGrpcService extends MetricsServiceGrpc.MetricsServiceImplBase 
                                                 responseObserver::onError,
                                                 responseObserver::onCompleted);
         }
+
 }

@@ -12,8 +12,15 @@ message MetricRequest {
   string host = 1;
 }
 
+message ProcessorInfo {
+  string name = 1; 
+  int32 logicalCores = 2; 
+  int32 physicalCores = 3;
+}
+
 message MetricResponse {
   float cpuUsage = 1;
-  float ramUsage = 2;
-  string hostName = 3;
+  repeated ProcessorInfo processors = 2; 
+  float ramUsage = 3;
+  string hostName = 4;
 }

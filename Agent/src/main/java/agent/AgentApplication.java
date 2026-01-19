@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AgentApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GRpcApplication.class, args);
+		SpringApplication.run(AgentApplication.class, args);
 	}
 
 }

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "gRPC.services";
+option java_outer_classname = "MetricsProto";
+
+service MetricsService {
+  rpc streamMetrics(MetricRequest) returns (stream MetricResponse);
+}
+
+message MetricRequest {
+  string host = 1;
+}
+
+message MetricResponse {
+  float cpuUsage = 1;
+  float ramUsage = 2;
+  string hostName = 3;
+}

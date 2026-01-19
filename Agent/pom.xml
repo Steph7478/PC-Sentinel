@@ -11,10 +11,10 @@
 		<relativePath/>
 	</parent>
 
-	<groupId>gRPC</groupId>
-	<artifactId>gRPC</artifactId>
+	<groupId>agent</groupId>
+	<artifactId>agent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>gRPC</name>
+	<name>agent</name>
 
 	<properties>
 		<java.version>21</java.version>

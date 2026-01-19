@@ -1,4 +1,4 @@
-package gRPC.services;
+package agent.services;
 
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;

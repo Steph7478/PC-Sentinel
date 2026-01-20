@@ -16,7 +16,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copiar JAR do Agent
-COPY --from=build /app/Agent/target/*.jar agent.jar
+COPY --from=build /app/Agent/target/agent-0.0.1-SNAPSHOT.jar agent.jar
 
 EXPOSE 9090
 ENTRYPOINT ["java","-jar","agent.jar"]

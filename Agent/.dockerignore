@@ -1,0 +1,27 @@
+# Ignorar diretórios do Maven
+target/
+.mvn/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Ignorar IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Ignorar logs
+*.log
+
+# Ignorar arquivos temporários
+*.tmp
+*.swp
+.DS_Store
+
+# Ignorar diretórios de sistema
+bin/
+out/

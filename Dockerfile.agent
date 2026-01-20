@@ -1,0 +1,22 @@
+# Stage build
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Copiar módulos necessários
+COPY Contract ./Contract
+COPY Agent ./Agent
+COPY pom.xml ./pom.xml
+
+# Build do Contract e do Agent
+RUN mvn -f Contract/pom.xml clean install -DskipTests
+RUN mvn -f Agent/pom.xml clean package -DskipTests
+
+# Stage 2: Imagem final leve
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+# Copiar JAR do Agent
+COPY --from=build /app/Agent/target/*.jar agent.jar
+
+EXPOSE 9090
+ENTRYPOINT ["java","-jar","agent.jar"]

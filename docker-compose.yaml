@@ -2,30 +2,25 @@ version: '3.8'
 
 services:
   kafka:
-    image: apache/kafka:latest
+    image: apache/kafka-native:4.1.1
     container_name: kafka
     ports:
       - "9092:9092"
+      - "9093:9093"
     environment:
-      # KRaft mode single-node
+      # Single‑node KRaft mode
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_NODE_ID: 1
-      KAFKA_BROKER_ID: 1
-
-      # Listeners
+      KAFKA_NODE_ID: "1"
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
 
-      # Quorum
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-
-      # Topics & logs
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_LOG_DIRS: /var/lib/kafka/data
-
+      # Logs menores
+      KAFKA_LOG_RETENTION_BYTES: "10485760"      # 10MB
+      KAFKA_LOG_SEGMENT_BYTES: "5242880"        # 5MB
+      KAFKA_LOG_RETENTION_MS: "86400000"        # 24h
+      KAFKA_LOG_CLEANER_INTERVAL_MS: "10000"    # limpa/varre logs a cada 10s
     volumes:
       - kafka_data:/var/lib/kafka/data
 
@@ -37,6 +32,7 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_REFRESH_INTERVAL_MS: "10000"  # UI atualiza a cada 10s
     depends_on:
       - kafka
 

@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analyser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analyser
+  template:
+    metadata:
+      labels:
+        app: analyser
+    spec:
+      containers:
+        - image: docker.io/library/analyser:local
+          name: analyser
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi

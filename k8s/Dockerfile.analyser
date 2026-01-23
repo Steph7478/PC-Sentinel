@@ -1,0 +1,23 @@
+# Stage 1: Build com Maven
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+
+WORKDIR /app
+
+COPY Contract ./Contract
+COPY Analyser ./Analyser
+COPY pom.xml ./pom.xml
+
+RUN mvn -f Contract/pom.xml clean install -DskipTests
+
+RUN mvn -f Analyser/pom.xml clean package -DskipTests
+
+# Stage 2: Imagem final (runtime)
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/Analyser/target/analyser-0.0.1-SNAPSHOT.jar analyser.jar
+
+EXPOSE 9090
+
+ENTRYPOINT ["java","-jar","analyser.jar"]

@@ -1,0 +1,18 @@
+---
+spring:
+  application:
+    name: analyser
+  grpc:
+    client:
+      agent:
+        address: static://agent-grpc:9090
+        negotiationType: PLAINTEXT
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: analyser
+      properties:
+        spring.json.trusted.packages: '*'
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

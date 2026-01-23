@@ -27,7 +27,7 @@ public class AgentMetricsClient {
         this.producer = producer;
 
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress("NODE_IP", 31090)
+                .forAddress("localhost", 9090)
                 .usePlaintext()
                 .build();
 

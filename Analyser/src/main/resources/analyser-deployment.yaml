@@ -14,7 +14,7 @@ spec:
         app: analyser
     spec:
       containers:
-        - image: localhost:5000/agent:local
+        - image: host.docker.internal:5000/analyser:local
           imagePullPolicy: IfNotPresent
           name: analyser
           ports:

@@ -2,6 +2,7 @@ package analyser.grpc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import agent.services.MetricRequest;
@@ -23,11 +24,16 @@ public class AgentMetricsClient {
     private final MetricsServiceStub stub;
     private final MetricsProducer producer;
 
-    public AgentMetricsClient(MetricsProducer producer) {
+    public AgentMetricsClient(
+            MetricsProducer producer,
+            @Value("${grpc.analyser.host}") String grpcHost,
+            @Value("${grpc.analyser.port}") int grpcPort) {
         this.producer = producer;
 
+        log.info("Conectando no gRPC {}:{}", grpcHost, grpcPort);
+
         ManagedChannel channel = ManagedChannelBuilder
-                .forAddress("localhost", 9090)
+                .forAddress(grpcHost, grpcPort)
                 .usePlaintext()
                 .build();
 
@@ -45,18 +51,20 @@ public class AgentMetricsClient {
             @Override
             public void onNext(MetricResponse metric) {
                 producer.send(metric);
-                log.debug("Métrica recebida do host {}: CPU {}%",
-                        metric.getHostName(), metric.getCpuUsage());
+                log.debug(
+                        "Métrica recebida do host {}: CPU {}%",
+                        metric.getHostName(),
+                        metric.getCpuUsage());
             }
 
             @Override
             public void onError(Throwable t) {
-                log.error("Stream caiu", t);
+                log.error("Stream gRPC caiu", t);
             }
 
             @Override
             public void onCompleted() {
-                log.info("Stream finalizado");
+                log.info("Stream gRPC finalizado");
             }
         });
     }

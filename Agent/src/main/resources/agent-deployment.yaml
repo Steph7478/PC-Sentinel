@@ -14,7 +14,7 @@ spec:
         app: agent
     spec:
       containers:
-        - image: docker.io/library/agent:local
+        - image: localhost:5000/agent:local
           imagePullPolicy: IfNotPresent
           name: agent
           ports:

@@ -14,7 +14,8 @@ spec:
         app: analyser
     spec:
       containers:
-        - image: docker.io/library/analyser:local
+        - image: localhost:5000/agent:local
+          imagePullPolicy: IfNotPresent
           name: analyser
           ports:
             - containerPort: 8080

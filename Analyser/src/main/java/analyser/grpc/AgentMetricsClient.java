@@ -3,7 +3,6 @@ package analyser.grpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import agent.services.MetricRequest;
@@ -85,12 +84,5 @@ public class AgentMetricsClient {
                 log.info("Stream gRPC finalizado");
             }
         });
-    }
-
-    @Scheduled(fixedDelay = 2000)
-    public void tryStartStream() {
-        if (!isStreaming() && isStubAvailable()) {
-            startStream();
-        }
     }
 }

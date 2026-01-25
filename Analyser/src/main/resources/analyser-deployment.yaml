@@ -15,12 +15,13 @@ spec:
     spec:
       containers:
         - env:
-            - name: GRPC_AGENT_HOST
-              value: agent-grpc
-            - name: GRPC_AGENT_PORT
-              value: '9090'
+            - name: DOCKER_HOST_IP
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_HOST_IP
+                  name: host-ip-config
           image: localhost:5000/analyser:local
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           name: analyser
           ports:
             - containerPort: 8080

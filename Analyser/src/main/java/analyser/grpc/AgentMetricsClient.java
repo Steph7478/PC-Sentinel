@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import agent.services.MetricRequest;
 import agent.services.MetricResponse;
 import agent.services.MetricsServiceGrpc;
-import agent.services.MetricsServiceGrpc.MetricsServiceStub;
 import analyser.kafka.MetricsProducer;
 
 import io.grpc.ManagedChannel;
@@ -20,29 +19,19 @@ public class AgentMetricsClient {
 
     private static final Logger log = LoggerFactory.getLogger(AgentMetricsClient.class);
 
-    private final MetricsServiceStub stub;
     private final MetricsProducer producer;
+    private final String grpcHost;
+    private final int grpcPort;
 
+    private ManagedChannel channel;
     private boolean streaming = false;
 
-    public AgentMetricsClient(
-            MetricsProducer producer,
+    public AgentMetricsClient(MetricsProducer producer,
             @Value("${grpc.analyser.host}") String grpcHost,
             @Value("${grpc.analyser.port}") int grpcPort) {
         this.producer = producer;
-
-        log.info("Conectando no gRPC {}:{}", grpcHost, grpcPort);
-
-        ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(grpcHost, grpcPort)
-                .usePlaintext()
-                .build();
-
-        this.stub = MetricsServiceGrpc.newStub(channel);
-    }
-
-    public boolean isStubAvailable() {
-        return stub != null;
+        this.grpcHost = grpcHost;
+        this.grpcPort = grpcPort;
     }
 
     public boolean isStreaming() {
@@ -52,37 +41,48 @@ public class AgentMetricsClient {
     public void startStream() {
         if (streaming)
             return;
+
+        log.info("Conectando no gRPC {}:{}", grpcHost, grpcPort);
+
+        if (channel == null || channel.isShutdown() || channel.isTerminated()) {
+            channel = ManagedChannelBuilder
+                    .forAddress(grpcHost, grpcPort)
+                    .usePlaintext()
+                    .enableRetry()
+                    .maxRetryAttempts(5)
+                    .build();
+        }
+
         streaming = true;
 
-        MetricRequest request = MetricRequest.newBuilder()
-                .setHost("analyser")
-                .build();
+        MetricsServiceGrpc.newStub(channel)
+                .streamMetrics(MetricRequest.newBuilder().setHost("analyser").build(),
+                        new StreamObserver<>() {
+                            @Override
+                            public void onNext(MetricResponse metric) {
+                                producer.send(metric);
+                            }
 
-        log.info("Iniciando stream gRPC com o Agent...");
+                            @Override
+                            public void onError(Throwable t) {
+                                streaming = false;
+                                log.warn("Stream gRPC caiu, será re-tentado pelo scheduler", t);
+                                shutdownChannel();
+                            }
 
-        stub.streamMetrics(request, new StreamObserver<MetricResponse>() {
+                            @Override
+                            public void onCompleted() {
+                                streaming = false;
+                                log.info("Stream gRPC finalizado pelo servidor");
+                                shutdownChannel();
+                            }
+                        });
+    }
 
-            @Override
-            public void onNext(MetricResponse metric) {
-                producer.send(metric);
-                log.debug(
-                        "Métrica recebida do host {}: CPU {}%, RAM {}%",
-                        metric.getHostName(),
-                        metric.getCpuUsage(),
-                        metric.getRamUsage());
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                streaming = false;
-                log.error("Stream gRPC caiu, retry automático", t);
-            }
-
-            @Override
-            public void onCompleted() {
-                streaming = false;
-                log.info("Stream gRPC finalizado");
-            }
-        });
+    private void shutdownChannel() {
+        if (channel != null && !channel.isShutdown()) {
+            channel.shutdown();
+            channel = null;
+        }
     }
 }

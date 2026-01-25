@@ -1,15 +1,13 @@
+---
+grpc:
+  analyser:
+    host: agent-grpc
+    port: 9090
 spring:
   application:
     name: analyser
-
-grpc:
-  analyser:
-    host: analyser
-    port: 8080
-
-spring:
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: ${DOCKER_HOST_IP}:9092
     consumer:
       group-id: analyser
       properties:

@@ -3,6 +3,7 @@ package analyser.grpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import agent.services.MetricRequest;
@@ -14,7 +15,6 @@ import analyser.kafka.MetricsProducer;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class AgentMetricsClient {
@@ -23,6 +23,8 @@ public class AgentMetricsClient {
 
     private final MetricsServiceStub stub;
     private final MetricsProducer producer;
+
+    private boolean streaming = false;
 
     public AgentMetricsClient(
             MetricsProducer producer,
@@ -40,11 +42,24 @@ public class AgentMetricsClient {
         this.stub = MetricsServiceGrpc.newStub(channel);
     }
 
-    @PostConstruct
-    public void start() {
+    public boolean isStubAvailable() {
+        return stub != null;
+    }
+
+    public boolean isStreaming() {
+        return streaming;
+    }
+
+    public void startStream() {
+        if (streaming)
+            return;
+        streaming = true;
+
         MetricRequest request = MetricRequest.newBuilder()
                 .setHost("analyser")
                 .build();
+
+        log.info("Iniciando stream gRPC com o Agent...");
 
         stub.streamMetrics(request, new StreamObserver<MetricResponse>() {
 
@@ -52,20 +67,30 @@ public class AgentMetricsClient {
             public void onNext(MetricResponse metric) {
                 producer.send(metric);
                 log.debug(
-                        "Métrica recebida do host {}: CPU {}%",
+                        "Métrica recebida do host {}: CPU {}%, RAM {}%",
                         metric.getHostName(),
-                        metric.getCpuUsage());
+                        metric.getCpuUsage(),
+                        metric.getRamUsage());
             }
 
             @Override
             public void onError(Throwable t) {
-                log.error("Stream gRPC caiu", t);
+                streaming = false;
+                log.error("Stream gRPC caiu, retry automático", t);
             }
 
             @Override
             public void onCompleted() {
+                streaming = false;
                 log.info("Stream gRPC finalizado");
             }
         });
+    }
+
+    @Scheduled(fixedDelay = 2000)
+    public void tryStartStream() {
+        if (!isStreaming() && isStubAvailable()) {
+            startStream();
+        }
     }
 }

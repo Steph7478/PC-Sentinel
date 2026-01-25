@@ -14,7 +14,12 @@ spec:
         app: analyser
     spec:
       containers:
-        - image: localhost:5000/analyser:local
+        - env:
+            - name: GRPC_AGENT_HOST
+              value: agent-grpc
+            - name: GRPC_AGENT_PORT
+              value: '9090'
+          image: localhost:5000/analyser:local
           imagePullPolicy: IfNotPresent
           name: analyser
           ports:

@@ -20,6 +20,11 @@ spec:
           ports:
             - containerPort: 9090
               name: grpc
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            tcpSocket:
+              port: 9090
           resources:
             limits:
               cpu: 500m

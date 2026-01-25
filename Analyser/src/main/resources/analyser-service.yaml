@@ -5,10 +5,9 @@ metadata:
   name: analyser
 spec:
   ports:
-    - name: grpc
+    - name: http
       port: 8080
       protocol: TCP
       targetPort: 8080
   selector:
     app: analyser
-  type: ClusterIP

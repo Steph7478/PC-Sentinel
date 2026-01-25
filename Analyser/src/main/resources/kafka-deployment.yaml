@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_PROCESS_ROLES
+              value: broker,controller
+            - name: KAFKA_NODE_ID
+              value: '1'
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka:9092
+            - name: KAFKA_CONTROLLER_LISTENER_NAMES
+              value: CONTROLLER
+            - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+              value: 1@kafka:9093
+            - name: KAFKA_LOG_RETENTION_BYTES
+              value: '10485760'
+            - name: KAFKA_LOG_SEGMENT_BYTES
+              value: '5242880'
+            - name: KAFKA_LOG_RETENTION_MS
+              value: '86400000'
+            - name: KAFKA_LOG_CLEANER_INTERVAL_MS
+              value: '10000'
+            - name: KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS
+              value: '60000'
+            - name: KAFKA_CONTROLLER_HEARTBEAT_INTERVAL_MS
+              value: '10000'
+          image: apache/kafka-native:4.1.1
+          imagePullPolicy: IfNotPresent
+          name: kafka
+          ports:
+            - containerPort: 9092
+              name: broker
+            - containerPort: 9093
+              name: controller

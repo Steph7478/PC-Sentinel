@@ -14,13 +14,7 @@ spec:
         app: analyser
     spec:
       containers:
-        - env:
-            - name: DOCKER_HOST_IP
-              valueFrom:
-                configMapKeyRef:
-                  key: DOCKER_HOST_IP
-                  name: host-ip-config
-          image: localhost:5000/analyser:local
+        - image: localhost:5000/analyser:local
           imagePullPolicy: Always
           name: analyser
           ports:
@@ -33,3 +27,10 @@ spec:
             requests:
               cpu: 250m
               memory: 128Mi
+      initContainers:
+        - command:
+            - sh
+            - '-c'
+            - until nc -z kafka 9092; do echo waiting for kafka; sleep 2; done
+          image: busybox
+          name: wait-for-kafka

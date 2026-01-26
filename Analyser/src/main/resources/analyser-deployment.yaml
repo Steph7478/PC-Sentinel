@@ -14,7 +14,13 @@ spec:
         app: analyser
     spec:
       containers:
-        - image: localhost:5000/analyser:local
+        - env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  key: KAFKA_BOOTSTRAP_SERVERS
+                  name: kafka-config
+          image: localhost:5000/analyser:local
           imagePullPolicy: Always
           name: analyser
           ports:
@@ -31,6 +37,12 @@ spec:
         - command:
             - sh
             - '-c'
-            - until nc -z kafka 9092; do echo waiting for kafka; sleep 2; done
+            - |
+              echo "Waiting for Kafka to be ready..."
+              until nc -z kafka 9092; do
+                echo "Kafka not ready, sleeping 2s..."
+                sleep 2
+              done
+              echo "Kafka is ready!"
           image: busybox
           name: wait-for-kafka

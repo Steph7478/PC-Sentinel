@@ -22,11 +22,17 @@ spec:
             - name: KAFKA_LISTENERS
               value: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: PLAINTEXT://kafka:9092
+              valueFrom:
+                configMapKeyRef:
+                  key: KAFKA_ADVERTISED_LISTENERS
+                  name: kafka-config
             - name: KAFKA_CONTROLLER_LISTENER_NAMES
               value: CONTROLLER
             - name: KAFKA_CONTROLLER_QUORUM_VOTERS
-              value: 1@kafka:9093
+              valueFrom:
+                configMapKeyRef:
+                  key: KAFKA_CONTROLLER_QUORUM_VOTERS
+                  name: kafka-config
             - name: KAFKA_LOG_RETENTION_BYTES
               value: '10485760'
             - name: KAFKA_LOG_SEGMENT_BYTES

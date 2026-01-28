@@ -15,13 +15,10 @@ public class AgentGrpcService extends MetricsServiceGrpc.MetricsServiceImplBase 
         private OshiService oshiService;
 
         @Override
-        public void streamMetrics(
-                        MetricRequest request,
-                        StreamObserver<MetricResponse> responseObserver) {
-
+        public void streamMetrics(MetricRequest request, StreamObserver<MetricResponse> responseObserver) {
                 Mono<MetricResponse> initial = Mono.just(
                                 MetricResponse.newBuilder()
-                                                .addAllProcessors(oshiService.getProcessorInfo())
+                                                .setProcessors(oshiService.getProcessorInfo())
                                                 .setHostName(oshiService.getHostName())
                                                 .build());
 

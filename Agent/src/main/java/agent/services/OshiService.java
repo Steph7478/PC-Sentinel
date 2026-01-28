@@ -1,7 +1,6 @@
 package agent.services;
 
 import java.net.InetAddress;
-import java.util.List;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -30,17 +29,15 @@ public class OshiService {
         return Math.round(usage * 100f) / 100f;
     }
 
-    public List<ProcessorInfo> getProcessorInfo() {
+    public ProcessorInfo getProcessorInfo() {
         int physicalCores = processor.getPhysicalProcessorCount();
         int logicalCores = processor.getLogicalProcessorCount();
 
-        ProcessorInfo info = ProcessorInfo.newBuilder()
+        return ProcessorInfo.newBuilder()
                 .setName(processor.getProcessorIdentifier().getName())
                 .setPhysicalCores(physicalCores)
                 .setLogicalCores(logicalCores)
                 .build();
-
-        return List.of(info);
     }
 
     public String getHostName() {

@@ -25,7 +25,7 @@ public class MetricsProducer {
     }
 
     public void sendProcessInfo(MetricResponse metric) {
-        var p = metric.getProcessor();
+        var p = metric.getProcessors();
 
         ProcessInfoDTO dto = new ProcessInfoDTO(
                 metric.getHostName(),

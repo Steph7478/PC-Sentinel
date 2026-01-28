@@ -1,7 +1,8 @@
 ---
 spring:
   graphql:
-    path: /api/metrics
+    http:
+      path: /api/metrics
     websocket:
       enabled: true
       path: /api/metrics

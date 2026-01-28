@@ -12,8 +12,8 @@ type Usage {
 }
 
 type ProcessInfos {
-    hostname: String
-    host: String
+    hostName: String
+    processorName: String
     logicalCores: Int
     physicalCores: Int
 }

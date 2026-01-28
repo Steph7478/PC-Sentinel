@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 import agent.services.MetricRequest;
 import agent.services.MetricResponse;
 import agent.services.MetricsServiceGrpc;
-import analyser.kafka.MetricsProducer;
-
+import analyser.kafka.producer.MetricsProducer;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -57,10 +56,11 @@ public class AgentMetricsClient {
 
         MetricsServiceGrpc.newStub(channel)
                 .streamMetrics(MetricRequest.newBuilder().setHost("analyser").build(),
-                        new StreamObserver<>() {
+                        new StreamObserver<MetricResponse>() {
                             @Override
                             public void onNext(MetricResponse metric) {
-                                producer.send(metric);
+                                producer.sendUsage(metric);
+                                producer.sendProcessInfo(metric);
                             }
 
                             @Override

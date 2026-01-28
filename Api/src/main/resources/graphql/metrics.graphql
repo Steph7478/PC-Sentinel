@@ -1,0 +1,19 @@
+type Query {
+    processInfos: ProcessInfos
+}
+
+type Subscription {
+    streamUsage: Usage
+}
+
+type Usage {
+    cpuUsage: Float
+    ramUsage: Float
+}
+
+type ProcessInfos {
+    hostname: String
+    host: String
+    logicalCores: Int
+    physicalCores: Int
+}

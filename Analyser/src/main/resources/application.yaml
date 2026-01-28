@@ -1,7 +1,7 @@
 ---
 grpc:
   analyser:
-    host: agent-grpc
+    host: agent
     port: 9090
 spring:
   kafka:

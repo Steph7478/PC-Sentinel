@@ -46,7 +46,7 @@ spec:
               echo "Kafka is ready!"
 
               echo "Waiting for Agent to be ready..."
-              until nc -z agent-grpc 9090; do
+              until nc -z agent 9090; do
                 echo "Agent not ready, sleeping 2s..."
                 sleep 2
               done

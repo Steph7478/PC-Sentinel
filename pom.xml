@@ -14,6 +14,7 @@
         <module>Contract</module>
         <module>Agent</module>
         <module>Analyser</module>
+        <module>Api</module>
     </modules>
 
     <properties>

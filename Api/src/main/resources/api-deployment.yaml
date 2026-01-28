@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+              valueFrom:
+                configMapKeyRef:
+                  key: KAFKA_CONTROLLER_QUORUM_VOTERS
+                  name: kafka-config
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  key: KAFKA_BOOTSTRAP_SERVERS
+                  name: kafka-config
+            - name: SPRING_GRAPHQL_WEBSOCKET_ENABLED
+              value: 'true'
+          image: localhost:5000/api:local
+          name: api
+          ports:
+            - containerPort: 8080

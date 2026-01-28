@@ -11,7 +11,7 @@ import reactor.core.publisher.Sinks;
 public class GraphQLUsageConsumer {
     private final Sinks.Many<MetricDTO> usageSink = Sinks.many().multicast().onBackpressureBuffer();
 
-    @KafkaListener(topics = "metrics-usage-topic", groupId = "graphql-api-usage")
+    @KafkaListener(topics = "metrics-usage-topic", groupId = "api-usage-group")
     public void consume(MetricDTO dto) {
         usageSink.tryEmitNext(dto);
     }

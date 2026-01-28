@@ -22,7 +22,7 @@ public class AgentGrpcService extends MetricsServiceGrpc.MetricsServiceImplBase 
                                                 .setHostName(oshiService.getHostName())
                                                 .build());
 
-                Flux<MetricResponse> metrics = Flux.interval(Duration.ofSeconds(1))
+                Flux<MetricResponse> metrics = Flux.interval(Duration.ofSeconds(10))
                                 .map(tick -> MetricResponse.newBuilder()
                                                 .setCpuUsage(oshiService.getCpu())
                                                 .setRamUsage(oshiService.getRam())

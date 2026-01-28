@@ -12,7 +12,7 @@ public class ProcessInfoConsumer {
 
     @KafkaListener(topics = "metrics-info-topic", groupId = "graphql-info")
     public void consumeInfo(ProcessInfoDTO info) {
-        infoCache.compareAndSet(null, info);
+        infoCache.set(info);
     }
 
     public ProcessInfoDTO getInfo() {

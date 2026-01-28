@@ -11,7 +11,7 @@ import api.dto.ProcessInfoDTO;
 public class GraphQLInfoConsumer {
     private final AtomicReference<ProcessInfoDTO> lastInfo = new AtomicReference<>();
 
-    @KafkaListener(topics = "metrics-info-topic", groupId = "graphql-api-info")
+    @KafkaListener(topics = "metrics-info-topic", groupId = "api-info-group")
     public void consume(ProcessInfoDTO dto) {
         lastInfo.set(dto);
     }

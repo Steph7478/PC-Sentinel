@@ -4,11 +4,13 @@ spring:
     path: /api/metrics
     websocket:
       enabled: true
+      path: /api/metrics
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
     consumer:
-      group-id: graphql-consumer
+      group-id: graphql-api-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: '*'
+        spring.json.use.type.headers: false
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer

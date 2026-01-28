@@ -1,0 +1,20 @@
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+
+WORKDIR /app
+
+COPY Contract ./Contract
+COPY Api ./Api
+COPY pom.xml .
+
+RUN mvn -f Contract/pom.xml clean install -DskipTests
+RUN mvn -f Api/pom.xml clean package -DskipTests
+
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/Api/target/*.jar api.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "api.jar"]

@@ -13,5 +13,5 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: '*'
-        spring.json.use.type.headers: false
+        spring.json.type.mapping: analyser.dto.MetricDTO:api.dto.MetricDTO,analyser.dto.ProcessInfoDTO:api.dto.ProcessInfoDTO
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer

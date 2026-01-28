@@ -1,8 +1,9 @@
 ---
 grpc:
-  analyser:
-    host: agent
-    port: 9090
+  client:
+    agentClient:
+      address: static://${grpc.analyser.host:agent}:${grpc.analyser.port:9090}
+      negotiation-type: plaintext
 spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}

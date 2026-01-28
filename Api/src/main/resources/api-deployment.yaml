@@ -28,6 +28,7 @@ spec:
             - name: SPRING_GRAPHQL_WEBSOCKET_ENABLED
               value: 'true'
           image: localhost:5000/api:local
+          imagePullPolicy: Always
           name: api
           ports:
             - containerPort: 8080

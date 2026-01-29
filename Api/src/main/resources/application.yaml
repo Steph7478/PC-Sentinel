@@ -6,6 +6,12 @@ spring:
     websocket:
       enabled: true
       path: /api/metrics
+  grpc:
+    client:
+      channels:
+        agentClient:
+          address: static://${grpc.agent.host:agent}:${grpc.agent.port:9090}
+          negotiation-type: plaintext
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
     consumer:

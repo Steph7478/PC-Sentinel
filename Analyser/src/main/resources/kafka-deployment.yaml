@@ -48,6 +48,18 @@ spec:
           volumeMounts:
             - mountPath: /tmp/kafka-logs
               name: kafka-data
+      initContainers:
+        - command:
+            - sh
+            - '-c'
+            - |
+              echo "Waiting for Agent..."
+              until nc -z agent 9090; do
+                sleep 2
+              done
+              echo "All ready!"
+          image: busybox
+          name: wait-for-analyser
       volumes:
         - emptyDir:
             sizeLimit: 10Mi

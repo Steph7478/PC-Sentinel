@@ -16,13 +16,7 @@ public class ProcessInfoGraphQLController {
     }
 
     @QueryMapping
-    public Mono<ProcessInfoDTO> processInfos() {
-        ProcessInfoDTO latest = infoConsumer.getLatestInfo();
-
-        if (latest == null) {
-            return Mono.empty();
-        }
-
-        return Mono.just(latest);
+    public Mono<ProcessInfoDTO> processInfo() {
+        return infoConsumer.getInfo();
     }
 }

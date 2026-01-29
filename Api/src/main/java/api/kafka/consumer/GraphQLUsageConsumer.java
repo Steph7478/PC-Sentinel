@@ -13,7 +13,6 @@ public class GraphQLUsageConsumer {
 
     @KafkaListener(topics = "metrics-usage-topic", groupId = "api-usage-group")
     public void consume(MetricDTO dto) {
-        System.out.println("KAFKA: Metric recebida");
         usageSink.tryEmitNext(dto);
     }
 

@@ -3,21 +3,19 @@ package api.kafka.consumer;
 import api.dto.ProcessInfoDTO;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.atomic.AtomicReference;
+import reactor.core.publisher.Mono;
 
 @Service
 public class GraphQLInfoConsumer {
 
-    private final AtomicReference<ProcessInfoDTO> lastInfo = new AtomicReference<>();
+    private ProcessInfoDTO lastData;
 
     @KafkaListener(topics = "metrics-info-topic", groupId = "api-info-group")
     public void consume(ProcessInfoDTO dto) {
-        System.out.println("KAFKA: ProcessInfo recebido");
-        lastInfo.set(dto);
+        this.lastData = dto;
     }
 
-    public ProcessInfoDTO getLatestInfo() {
-        return lastInfo.get();
+    public Mono<ProcessInfoDTO> getInfo() {
+        return Mono.justOrEmpty(this.lastData);
     }
 }

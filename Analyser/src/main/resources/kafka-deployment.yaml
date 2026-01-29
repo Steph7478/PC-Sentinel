@@ -20,36 +20,35 @@ spec:
             - name: KAFKA_NODE_ID
               value: '1'
             - name: KAFKA_LISTENERS
-              value: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+              value: PLAINTEXT://0.0.0.0:9092,CONTROLLER://127.0.0.1:9093
             - name: KAFKA_ADVERTISED_LISTENERS
-              valueFrom:
-                configMapKeyRef:
-                  key: KAFKA_ADVERTISED_LISTENERS
-                  name: kafka-config
+              value: PLAINTEXT://kafka:9092
             - name: KAFKA_CONTROLLER_LISTENER_NAMES
               value: CONTROLLER
             - name: KAFKA_CONTROLLER_QUORUM_VOTERS
-              valueFrom:
-                configMapKeyRef:
-                  key: KAFKA_CONTROLLER_QUORUM_VOTERS
-                  name: kafka-config
-            - name: KAFKA_LOG_RETENTION_BYTES
-              value: '10485760'
-            - name: KAFKA_LOG_SEGMENT_BYTES
-              value: '5242880'
-            - name: KAFKA_LOG_RETENTION_MS
-              value: '86400000'
-            - name: KAFKA_LOG_CLEANER_INTERVAL_MS
-              value: '10000'
-            - name: KAFKA_CONTROLLER_SOCKET_TIMEOUT_MS
-              value: '60000'
-            - name: KAFKA_CONTROLLER_HEARTBEAT_INTERVAL_MS
-              value: '10000'
+              value: 1@127.0.0.1:9093
+            - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+              value: '1'
+            - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+              value: '1'
+            - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+              value: '1'
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: 'true'
+            - name: KAFKA_OPTS
+              value: '-Xms192M -Xmx192M'
           image: apache/kafka-native:4.1.1
-          imagePullPolicy: IfNotPresent
           name: kafka
-          ports:
-            - containerPort: 9092
-              name: broker
-            - containerPort: 9093
-              name: controller
+          resources:
+            limits:
+              memory: 300Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          volumeMounts:
+            - mountPath: /tmp/kafka-logs
+              name: kafka-data
+      volumes:
+        - emptyDir:
+            sizeLimit: 10Mi
+          name: kafka-data

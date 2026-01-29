@@ -16,10 +16,9 @@ spec:
       containers:
         - env:
             - name: KAFKA_BOOTSTRAP_SERVERS
-              valueFrom:
-                configMapKeyRef:
-                  key: KAFKA_BOOTSTRAP_SERVERS
-                  name: kafka-config
+              value: kafka:9092
+            - name: JAVA_OPTS
+              value: '-Xms128M -Xmx192M -XX:+UseSerialGC'
           image: localhost:5000/analyser:local
           imagePullPolicy: Always
           name: analyser
@@ -28,28 +27,24 @@ spec:
               name: http
           resources:
             limits:
-              cpu: 500m
+              cpu: 300m
               memory: 256Mi
             requests:
-              cpu: 250m
-              memory: 128Mi
+              cpu: 100m
+              memory: 160Mi
       initContainers:
         - command:
             - sh
             - '-c'
             - |
-              echo "Waiting for Kafka to be ready..."
+              echo "Waiting for Kafka..."
               until nc -z kafka 9092; do
-                echo "Kafka not ready, sleeping 2s..."
                 sleep 2
               done
-              echo "Kafka is ready!"
-
-              echo "Waiting for Agent to be ready..."
+              echo "Waiting for Agent..."
               until nc -z agent 9090; do
-                echo "Agent not ready, sleeping 2s..."
                 sleep 2
               done
-              echo "Agent is ready!"
+              echo "All ready!"
           image: busybox
-          name: wait-for-kafka
+          name: wait-for-dependencies

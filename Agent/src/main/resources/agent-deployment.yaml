@@ -14,7 +14,10 @@ spec:
         app: agent
     spec:
       containers:
-        - image: localhost:5000/agent:local
+        - env:
+            - name: JAVA_OPTS
+              value: '-Xms64M -Xmx128M -XX:+UseSerialGC'
+          image: localhost:5000/agent:local
           imagePullPolicy: Always
           name: agent
           ports:
@@ -22,13 +25,13 @@ spec:
               name: grpc
           readinessProbe:
             initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: 10
             tcpSocket:
               port: 9090
           resources:
             limits:
-              cpu: 500m
-              memory: 256Mi
+              cpu: 200m
+              memory: 160Mi
             requests:
-              cpu: 250m
-              memory: 128Mi
+              cpu: 50m
+              memory: 100Mi

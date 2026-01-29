@@ -1,9 +1,9 @@
 type Query {
-    processInfos: ProcessInfos
+    processInfo: ProcessInfo
 }
 
 type Subscription {
-    streamUsage: Usage
+    streamUsage: Usage!
 }
 
 type Usage {
@@ -11,7 +11,7 @@ type Usage {
     ramUsage: Float
 }
 
-type ProcessInfos {
+type ProcessInfo {
     hostName: String
     processorName: String
     logicalCores: Int

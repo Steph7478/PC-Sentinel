@@ -1,33 +1,28 @@
 package api.controller;
 
+import api.dto.ProcessInfoDTO;
+import api.kafka.consumer.GraphQLInfoConsumer;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-import api.dto.ProcessInfoDTO;
-import api.grpc.AgentDiscoveryClient;
-import api.kafka.consumer.GraphQLInfoConsumer;
-import agent.services.MetricResponse;
+import reactor.core.publisher.Mono;
 
 @Controller
 public class ProcessInfoGraphQLController {
-    private final GraphQLInfoConsumer infoConsumer;
-    private final AgentDiscoveryClient discoveryClient;
 
-    public ProcessInfoGraphQLController(GraphQLInfoConsumer infoConsumer, AgentDiscoveryClient discoveryClient) {
+    private final GraphQLInfoConsumer infoConsumer;
+
+    public ProcessInfoGraphQLController(GraphQLInfoConsumer infoConsumer) {
         this.infoConsumer = infoConsumer;
-        this.discoveryClient = discoveryClient;
     }
 
     @QueryMapping
-    public ProcessInfoDTO processInfos() {
+    public Mono<ProcessInfoDTO> processInfos() {
         ProcessInfoDTO latest = infoConsumer.getLatestInfo();
-        if (latest != null)
-            return latest;
 
-        MetricResponse res = discoveryClient.getPCIdentification();
-        return new ProcessInfoDTO(
-                res.getHostName(),
-                res.getProcessors().getName(),
-                res.getProcessors().getLogicalCores(),
-                res.getProcessors().getPhysicalCores());
+        if (latest == null) {
+            return Mono.empty();
+        }
+
+        return Mono.just(latest);
     }
 }

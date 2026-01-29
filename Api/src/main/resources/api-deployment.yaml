@@ -15,33 +15,32 @@ spec:
     spec:
       containers:
         - env:
-            - name: KAFKA_CONTROLLER_QUORUM_VOTERS
-              valueFrom:
-                configMapKeyRef:
-                  key: KAFKA_CONTROLLER_QUORUM_VOTERS
-                  name: kafka-config
             - name: KAFKA_BOOTSTRAP_SERVERS
-              valueFrom:
-                configMapKeyRef:
-                  key: KAFKA_BOOTSTRAP_SERVERS
-                  name: kafka-config
+              value: kafka:9092
             - name: SPRING_GRAPHQL_WEBSOCKET_ENABLED
               value: 'true'
+            - name: JAVA_OPTS
+              value: '-Xms128M -Xmx256M -XX:+UseSerialGC'
           image: localhost:5000/api:local
           imagePullPolicy: Always
           name: api
           ports:
             - containerPort: 8080
+          resources:
+            limits:
+              memory: 384Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
       initContainers:
         - command:
             - sh
             - '-c'
             - |
-              echo "Waiting for Analyser to be ready..."
+              echo "Waiting for Analyser..."
               until nc -z analyser 8080; do
-                echo "8080 not ready, sleeping 2s..."
                 sleep 2
               done
-              echo "8080 is ready!"
+              echo "Analyser is ready!"
           image: busybox
-          name: wait-for-kafka
+          name: wait-for-analyser

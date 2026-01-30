@@ -1,8 +1,0 @@
----
-grpc:
-  analyser:
-    host: localhost
-    port: 9090
-spring:
-  kafka:
-    bootstrap-servers: localhost:9092

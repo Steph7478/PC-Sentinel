@@ -57,3 +57,15 @@ services:
       - "9093:8080"
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8081:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_REFRESH_INTERVAL_MS: "10000"
+    profiles:
+      - kafka-ui

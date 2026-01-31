@@ -36,7 +36,9 @@ spring:
             allowedMethods:
               - GET
               - POST
-            allowedOriginPatterns: https://localhost:*
+            allowedOriginPatterns:
+              - http://localhost:*
+              - https://localhost:*
       routes:
         - filters:
             - args:

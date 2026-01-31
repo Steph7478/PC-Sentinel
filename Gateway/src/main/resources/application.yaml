@@ -1,0 +1,72 @@
+---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        failureRateThreshold: 50
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        waitDurationInOpenState: 10s
+    instances:
+      agentCB:
+        baseConfig: default
+      analyserCB:
+        baseConfig: default
+      apiCB:
+        baseConfig: default
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 2s
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - filters:
+            - args:
+                backoff:
+                  firstBackoff: 50ms
+                  maxBackoff: 500ms
+                methods: GET,POST
+                retries: 3
+                statuses: BAD_GATEWAY, GATEWAY_TIMEOUT
+              name: Retry
+            - args:
+                fallbackUri: forward:/fallback/api
+                name: apiCB
+              name: CircuitBreaker
+          id: api_route
+          predicates:
+            - Path=/api/**
+          uri: http://api:8080
+        - filters:
+            - args:
+                fallbackUri: forward:/fallback/agent
+                name: agentCB
+              name: CircuitBreaker
+          id: agent_route
+          predicates:
+            - Path=/agent/**
+          uri: http://agent:9090
+        - filters:
+            - args:
+                fallbackUri: forward:/fallback/analyser
+                name: analyserCB
+              name: CircuitBreaker
+          id: analyser_route
+          predicates:
+            - Path=/analyser/**
+          uri: http://analyser:9090
+        - filters:
+            - StripPrefix=1
+          id: kafka_ui_route
+          predicates:
+            - Path=/ui/**
+          uri: http://kafka-ui:8080

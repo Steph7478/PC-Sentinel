@@ -15,6 +15,7 @@
         <module>Agent</module>
         <module>Analyser</module>
         <module>Api</module>
+        <module>Gateway</module>
     </modules>
 
     <properties>

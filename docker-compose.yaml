@@ -19,6 +19,20 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_OPTS: "-Xms192M -Xmx192M"
 
+  gateway:
+    build:
+      context: .
+      dockerfile: k8s/Dockerfile.gateway
+    container_name: gateway
+    depends_on:
+      - api
+      - agent
+      - analyser
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
   agent:
     build:
       context: .

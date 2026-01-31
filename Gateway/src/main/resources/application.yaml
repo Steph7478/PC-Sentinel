@@ -28,6 +28,15 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowCredentials: true
+            allowedHeaders: '*'
+            allowedMethods:
+              - GET
+              - POST
+            allowedOriginPatterns: https://localhost:*
       routes:
         - filters:
             - args:

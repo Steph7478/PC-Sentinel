@@ -14,12 +14,7 @@ spec:
         app: analyser
     spec:
       containers:
-        - env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: kafka:9092
-            - name: JAVA_OPTS
-              value: '-Xms128M -Xmx192M -XX:+UseSerialGC'
-          image: localhost:5000/analyser:local
+        - image: localhost:5000/analyser:local
           imagePullPolicy: Always
           name: analyser
           ports:

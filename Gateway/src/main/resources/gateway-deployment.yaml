@@ -17,14 +17,17 @@ spec:
     spec:
       containers:
         - env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: kafka:9092
-          image: seu-registro/gateway:latest
+            - name: GATEWAY_SERVER
+              valueFrom:
+                configMapKeyRef:
+                  key: GATEWAY_SERVER
+                  name: server-config
+          image: localhost:5000/gateway:local
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 5
             periodSeconds: 10
           name: gateway
           ports:
@@ -33,12 +36,18 @@ spec:
             httpGet:
               path: /actuator/health/readiness
               port: 8080
-            initialDelaySeconds: 15
+            initialDelaySeconds: 5
             periodSeconds: 10
           resources:
             limits:
               cpu: 500m
-              memory: 512Mi
+              memory: 768Mi
             requests:
               cpu: 250m
-              memory: 256Mi
+              memory: 512Mi
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 10
